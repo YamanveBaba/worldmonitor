@@ -789,7 +789,7 @@ const FINANCE_FEEDS: Record<string, Feed[]> = {
 const PLATFORMAVRUPA_FEEDS: Record<string, Feed[]> = {
   ...FULL_FEEDS,
   politics: [
-    ...FULL_FEEDS.politics,
+    ...(FULL_FEEDS.politics ?? []),
     { name: 'NTV', url: rss('https://www.ntv.com.tr/son-dakika.rss') },
     { name: 'NTV Türkiye', url: rss('https://www.ntv.com.tr/turkiye.rss') },
     { name: 'CNN Türk', url: rss('https://www.cnnturk.com/feed/rss/all/news') },
