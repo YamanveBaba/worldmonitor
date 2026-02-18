@@ -285,9 +285,10 @@ function escapeHtml(s: string): string {
 
 /**
  * Send a single diaspora news item to Telegram (PlatformAvrupa – haberler).
+ * Sadece Türkçe metin; İngilizce başlık ve mavi "Haberi oku" linki yok.
  */
 export async function sendTelegramNewsItem(
-  title: string,
+  _title: string,
   source: string,
   link: string,
   categoryNames: string[]
@@ -295,9 +296,11 @@ export async function sendTelegramNewsItem(
   if (SITE_VARIANT !== 'platformavrupa') return false;
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHANNEL_ID) return false;
 
-  const catText = categoryNames.length > 0 ? categoryNames.slice(0, 3).join(' · ') : 'Haber';
-  const safeTitle = escapeHtml(title.length > 200 ? title.slice(0, 197) + '...' : title);
-  const messageText = `📰 <b>${safeTitle}</b>\n\n📌 ${escapeHtml(source)} · ${escapeHtml(catText)}\n\n<a href="${escapeHtml(link)}">Haberi oku</a>`;
+  const catText = categoryNames.length > 0 ? categoryNames.join(' · ') : 'Haber';
+  const messageText =
+    `📰 <b>Kategoriler:</b> ${escapeHtml(catText)}\n\n` +
+    `📌 <b>Kaynak:</b> ${escapeHtml(source)}\n\n` +
+    'Bu haber Avrupa Türkleri ve diaspora ile ilgili kategorilerde eşleşmiştir. İçeriği okumak için aşağıdaki butona tıklayın.';
 
   const message: TelegramMessage = {
     text: messageText,
