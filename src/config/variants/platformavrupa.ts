@@ -1,7 +1,6 @@
 // PlatformAvrupa variant - monitor.platformavrupa.com
 // Avrupa'da yaşayan Türk diasporası için özelleştirilmiş durum odası
 import type { PanelConfig, MapLayers } from '@/types';
-import type { VariantConfig } from './base';
 
 // Re-export base config
 export * from './base';

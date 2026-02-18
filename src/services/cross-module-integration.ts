@@ -130,7 +130,7 @@ export function createConvergenceAlert(convergence: GeoConvergenceAlert): Unifie
       const countries = result.countries || [];
       const turkishTitle = `Coğrafi Yakınsama: ${countries.join(', ') || 'Bilinmeyen Bölge'}`;
       const turkishDesc = `${convergence.totalEvents} olay tespit edildi (${convergence.lat.toFixed(1)}°, ${convergence.lon.toFixed(1)}°). ${convergence.types.length} farklı olay türü.`;
-      sendTelegramAlert('convergence_alert', result.priority, turkishTitle, turkishDesc, {
+      sendTelegramAlert('convergence_alert', result.priority as 'high' | 'critical', turkishTitle, turkishDesc, {
         location: { lat: convergence.lat, lon: convergence.lon },
         countries: countries,
       }).catch(err => console.warn('[Telegram] Convergence alert send failed:', err));
