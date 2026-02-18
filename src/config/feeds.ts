@@ -32,6 +32,10 @@ export const SOURCE_TIERS: Record<string, number> = {
   'Guardian ME': 2,
   'NPR News': 2,
   'CNN World': 2,
+  'CNN Türk': 2,
+  'CNN Türk Türkiye': 2,
+  'NTV': 2,
+  'NTV Türkiye': 2,
   'CNBC': 2,
   'MarketWatch': 2,
   'Al Jazeera': 2,
@@ -244,7 +248,9 @@ export const SOURCE_TYPES: Record<string, SourceType> = {
   'BBC World': 'mainstream', 'BBC Middle East': 'mainstream',
   'Guardian World': 'mainstream', 'Guardian ME': 'mainstream',
   'NPR News': 'mainstream', 'Al Jazeera': 'mainstream',
-  'CNN World': 'mainstream', 'Politico': 'mainstream',
+  'CNN World': 'mainstream', 'CNN Türk': 'mainstream', 'CNN Türk Türkiye': 'mainstream',
+  'NTV': 'mainstream', 'NTV Türkiye': 'mainstream',
+  'Politico': 'mainstream',
 
   // Market/Finance
   'CNBC': 'market', 'MarketWatch': 'market', 'Yahoo Finance': 'market',
@@ -779,8 +785,27 @@ const FINANCE_FEEDS: Record<string, Feed[]> = {
   ],
 };
 
+// PlatformAvrupa: FULL_FEEDS + Türkiye kaynakları (NTV, CNN Türk)
+const PLATFORMAVRUPA_FEEDS: Record<string, Feed[]> = {
+  ...FULL_FEEDS,
+  politics: [
+    ...FULL_FEEDS.politics,
+    { name: 'NTV', url: rss('https://www.ntv.com.tr/son-dakika.rss') },
+    { name: 'NTV Türkiye', url: rss('https://www.ntv.com.tr/turkiye.rss') },
+    { name: 'CNN Türk', url: rss('https://www.cnnturk.com/feed/rss/all/news') },
+    { name: 'CNN Türk Türkiye', url: rss('https://www.cnnturk.com/feed/rss/turkiye/news') },
+  ],
+};
+
 // Variant-aware exports
-export const FEEDS = SITE_VARIANT === 'tech' ? TECH_FEEDS : SITE_VARIANT === 'finance' ? FINANCE_FEEDS : FULL_FEEDS;
+export const FEEDS =
+  SITE_VARIANT === 'tech'
+    ? TECH_FEEDS
+    : SITE_VARIANT === 'finance'
+      ? FINANCE_FEEDS
+      : SITE_VARIANT === 'platformavrupa'
+        ? PLATFORMAVRUPA_FEEDS
+        : FULL_FEEDS;
 
 export const INTEL_SOURCES: Feed[] = [
   // Defense & Security (Tier 1)

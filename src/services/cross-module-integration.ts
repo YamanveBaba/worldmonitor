@@ -123,22 +123,7 @@ export function createConvergenceAlert(convergence: GeoConvergenceAlert): Unifie
   const alertId = `conv-${convergence.cellId}`;
   const alert = buildConvergenceAlert(convergence, alertId);
   const result = addAndMergeAlert(alert);
-  
-  // Telegram hook for PlatformAvrupa variant (high/critical priority only)
-  if (result.priority === 'high' || result.priority === 'critical') {
-    import('@/services/telegramService').then(({ sendTelegramAlert }) => {
-      const countries = result.countries || [];
-      const turkishTitle = `Coğrafi Yakınsama: ${countries.join(', ') || 'Bilinmeyen Bölge'}`;
-      const turkishDesc = `${convergence.totalEvents} olay tespit edildi (${convergence.lat.toFixed(1)}°, ${convergence.lon.toFixed(1)}°). ${convergence.types.length} farklı olay türü.`;
-      sendTelegramAlert('convergence_alert', result.priority as 'high' | 'critical', turkishTitle, turkishDesc, {
-        location: { lat: convergence.lat, lon: convergence.lon },
-        countries: countries,
-      }).catch(err => console.warn('[Telegram] Convergence alert send failed:', err));
-    }).catch(() => {
-      // Telegram service not available, ignore
-    });
-  }
-  
+  // Telegram hook for these alerts disabled – PlatformAvrupa uses diaspora news to Telegram instead.
   return result;
 }
 

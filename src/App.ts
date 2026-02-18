@@ -81,6 +81,7 @@ import {
   InvestmentsPanel,
 } from '@/components';
 import type { SearchResult } from '@/components/SearchModal';
+import { sendMatchedNewsToTelegram } from '@/services/diaspora-news-telegram';
 import { collectStoryData } from '@/services/story-data';
 import { renderStoryToCanvas } from '@/services/story-renderer';
 import { openStoryModal } from '@/components/StoryModal';
@@ -3218,6 +3219,10 @@ export class App {
     this.allNews = collectedNews;
     this.initialLoadComplete = true;
     maybeShowDownloadBanner();
+    // PlatformAvrupa: diaspora kategorilerine uyan haberleri Telegram'a gönder
+    if (SITE_VARIANT === 'platformavrupa') {
+      void sendMatchedNewsToTelegram(this.allNews);
+    }
     // Temporal baseline: report news volume
     updateAndCheck([
       { type: 'news', region: 'global', count: collectedNews.length },

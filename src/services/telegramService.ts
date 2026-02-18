@@ -10,6 +10,8 @@ import { SITE_VARIANT } from '@/config';
 const TELEGRAM_BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN || '';
 const TELEGRAM_CHANNEL_ID = import.meta.env.VITE_TELEGRAM_CHANNEL_ID || '';
 const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
+/** PlatformAvrupa site URL (Telegram butonları için; domain çalışmıyorsa Vercel URL kullanılır) */
+const PLATFORMAVRUPA_APP_URL = import.meta.env.VITE_PLATFORMAVRUPA_APP_URL || 'https://platformavrupa.vercel.app';
 
 if (SITE_VARIANT === 'platformavrupa') {
   console.log('[Telegram] config:', TELEGRAM_BOT_TOKEN ? 'token var' : 'token YOK', TELEGRAM_CHANNEL_ID ? 'channel var' : 'channel YOK');
@@ -246,12 +248,12 @@ ${escapeMarkdownV2(truncatedDesc)}`;
   
   // Button 1: Haritada Gör (if location available)
   if (data?.location) {
-    const mapUrl = `https://monitor.platformavrupa.com/?lat=${data.location.lat}&lon=${data.location.lon}&zoom=6&view=eu`;
+    const mapUrl = `${PLATFORMAVRUPA_APP_URL}/?lat=${data.location.lat}&lon=${data.location.lon}&zoom=6&view=eu`;
     buttons.push([{ text: '🗺️ Haritada Gör', url: mapUrl }]);
   }
   
-  // Button 2: PlatformAvrupa'ya Git
-  buttons.push([{ text: '🌐 PlatformAvrupa\'ya Git', url: 'https://monitor.platformavrupa.com/' }]);
+  // Button 2: Ayrıntı için PlatformAvrupa'yı ziyaret et
+  buttons.push([{ text: '🌐 PlatformAvrupa\'yı ziyaret et', url: PLATFORMAVRUPA_APP_URL }]);
   
   // Button 3: Detaylı Rapor (if URL available)
   if (data?.url) {
@@ -272,6 +274,44 @@ ${escapeMarkdownV2(truncatedDesc)}`;
   }
   
   return success;
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+/**
+ * Send a single diaspora news item to Telegram (PlatformAvrupa – haberler).
+ */
+export async function sendTelegramNewsItem(
+  title: string,
+  source: string,
+  link: string,
+  categoryNames: string[]
+): Promise<boolean> {
+  if (SITE_VARIANT !== 'platformavrupa') return false;
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHANNEL_ID) return false;
+
+  const catText = categoryNames.length > 0 ? categoryNames.slice(0, 3).join(' · ') : 'Haber';
+  const safeTitle = escapeHtml(title.length > 200 ? title.slice(0, 197) + '...' : title);
+  const messageText = `📰 <b>${safeTitle}</b>\n\n📌 ${escapeHtml(source)} · ${escapeHtml(catText)}\n\n<a href="${escapeHtml(link)}">Haberi oku</a>`;
+
+  const message: TelegramMessage = {
+    text: messageText,
+    parse_mode: 'HTML',
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: '📖 Haberi oku', url: link }],
+        [{ text: '🌐 PlatformAvrupa\'yı ziyaret et', url: PLATFORMAVRUPA_APP_URL }],
+      ],
+    },
+    disable_web_page_preview: false,
+  };
+
+  return sendTelegramMessage(message);
 }
 
 /**

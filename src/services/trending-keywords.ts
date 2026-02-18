@@ -530,20 +530,7 @@ async function handleSpike(spike: TrendingSpike, config: TrendingConfig): Promis
       },
     });
     
-    // Telegram hook for PlatformAvrupa variant
-    if (confidence >= 0.75) {
-      import('@/services/telegramService').then(({ sendTelegramAlert }) => {
-        const severity = confidence >= 0.9 ? 'critical' : 'high';
-        const turkishTitle = `"${spike.term}" Anahtar Kelime Artışı - ${spike.count} bahis ${windowHours} saatte`;
-        const turkishDesc = description || `${spike.term} terimi ${spike.count} kez bahsedildi (${multiplierText})`;
-        sendTelegramAlert('keyword_spike', severity, turkishTitle, turkishDesc, {
-          term: spike.term,
-          keywords: [spike.term],
-        }).catch(err => console.warn('[Telegram] Alert send failed:', err));
-      }).catch(() => {
-        // Telegram service not available, ignore
-      });
-    }
+    // Telegram hook for keyword spike disabled – PlatformAvrupa uses diaspora news to Telegram instead.
   } catch (error) {
     console.warn('[TrendingKeywords] Failed to handle spike:', error);
   } finally {
