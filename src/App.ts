@@ -203,10 +203,23 @@ export class App {
       this.panelSettings = { ...DEFAULT_PANELS };
     } else {
       this.mapLayers = loadFromStorage<MapLayers>(STORAGE_KEYS.mapLayers, defaultLayers);
-      this.panelSettings = loadFromStorage<Record<string, PanelConfig>>(
+      const savedSettings = loadFromStorage<Record<string, PanelConfig>>(
         STORAGE_KEYS.panels,
-        DEFAULT_PANELS
+        {}
       );
+      // Merge with DEFAULT_PANELS to include new panels (like monitors)
+      // Preserve enabled state from saved settings, but use default name/priority for new panels
+      this.panelSettings = { ...DEFAULT_PANELS };
+      Object.keys(DEFAULT_PANELS).forEach(key => {
+        if (savedSettings[key]) {
+          // Existing panel, preserve enabled state but update name/priority from default
+          this.panelSettings[key] = {
+            ...DEFAULT_PANELS[key],
+            enabled: savedSettings[key].enabled
+          };
+        }
+        // New panel (not in savedSettings) already has default config from spread above
+      });
       console.log('[App] Loaded panel settings from storage:', Object.entries(this.panelSettings).filter(([_, v]) => !v.enabled).map(([k]) => k));
 
       // One-time migration: reorder panels for existing users (v1.9 panel layout)
@@ -1733,7 +1746,7 @@ export class App {
         <div class="map-section" id="mapSection">
           <div class="panel-header">
             <div class="panel-header-left">
-              <span class="panel-title">${SITE_VARIANT === 'tech' ? 'Global Tech' : 'Global Situation'}</span>
+              <span class="panel-title">${SITE_VARIANT === 'tech' ? 'Global Tech' : SITE_VARIANT === 'platformavrupa' ? 'AVRUPA DURUM ODASI' : 'Global Situation'}</span>
             </div>
             <span class="header-clock" id="headerClock"></span>
             <button class="map-pin-btn" id="mapPinBtn" title="Pin map to top">
@@ -1903,11 +1916,14 @@ export class App {
     // Initialize map in the map section
     // Default to MENA view on mobile for better focus
     // Uses deck.gl (WebGL) on desktop, falls back to D3/SVG on mobile
+    // PlatformAvrupa variant: default to 'eu' view with Avrupa-focused coordinates
     const mapContainer = document.getElementById('mapContainer') as HTMLElement;
+    const defaultView = SITE_VARIANT === 'platformavrupa' ? 'eu' : (this.isMobile ? 'mena' : 'global');
+    const defaultZoom = SITE_VARIANT === 'platformavrupa' ? 4.2 : (this.isMobile ? 2.5 : 1.0);
     this.map = new MapContainer(mapContainer, {
-      zoom: this.isMobile ? 2.5 : 1.0,
+      zoom: defaultZoom,
       pan: { x: 0, y: 0 },  // Centered view to show full world
-      view: this.isMobile ? 'mena' : 'global',
+      view: defaultView,
       layers: this.mapLayers,
       timeRange: '7d',
     });
