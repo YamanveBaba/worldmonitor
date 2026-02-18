@@ -119,11 +119,14 @@ interface TechEventMarker {
 }
 
 // View presets with longitude, latitude, zoom
+// For platformavrupa variant, 'eu' view uses Avrupa-focused coordinates
 const VIEW_PRESETS: Record<DeckMapView, { longitude: number; latitude: number; zoom: number }> = {
   global: { longitude: 0, latitude: 20, zoom: 1.5 },
   america: { longitude: -95, latitude: 38, zoom: 3 },
   mena: { longitude: 45, latitude: 28, zoom: 3.5 },
-  eu: { longitude: 15, latitude: 50, zoom: 3.5 },
+  eu: SITE_VARIANT === 'platformavrupa' 
+    ? { longitude: 15.2, latitude: 54.5, zoom: 4.2 }  // Avrupa merkezi - PlatformAvrupa için
+    : { longitude: 15, latitude: 50, zoom: 3.5 },      // Normal EU view
   asia: { longitude: 105, latitude: 35, zoom: 3 },
   latam: { longitude: -60, latitude: -15, zoom: 3 },
   africa: { longitude: 20, latitude: 5, zoom: 3 },

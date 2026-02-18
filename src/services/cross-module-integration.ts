@@ -122,7 +122,24 @@ function buildConvergenceAlert(convergence: GeoConvergenceAlert, alertId: string
 export function createConvergenceAlert(convergence: GeoConvergenceAlert): UnifiedAlert {
   const alertId = `conv-${convergence.cellId}`;
   const alert = buildConvergenceAlert(convergence, alertId);
-  return addAndMergeAlert(alert);
+  const result = addAndMergeAlert(alert);
+  
+  // Telegram hook for PlatformAvrupa variant (high/critical priority only)
+  if (result.priority === 'high' || result.priority === 'critical') {
+    import('@/services/telegramService').then(({ sendTelegramAlert }) => {
+      const countries = result.countries || [];
+      const turkishTitle = `Coğrafi Yakınsama: ${countries.join(', ') || 'Bilinmeyen Bölge'}`;
+      const turkishDesc = `${convergence.totalEvents} olay tespit edildi (${convergence.lat.toFixed(1)}°, ${convergence.lon.toFixed(1)}°). ${convergence.types.length} farklı olay türü.`;
+      sendTelegramAlert('convergence_alert', result.priority, turkishTitle, turkishDesc, {
+        location: { lat: convergence.lat, lon: convergence.lon },
+        countries: countries,
+      }).catch(err => console.warn('[Telegram] Convergence alert send failed:', err));
+    }).catch(() => {
+      // Telegram service not available, ignore
+    });
+  }
+  
+  return result;
 }
 
 export function createCIIAlert(

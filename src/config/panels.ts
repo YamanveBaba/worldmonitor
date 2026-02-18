@@ -365,11 +365,147 @@ const FINANCE_MOBILE_MAP_LAYERS: MapLayers = {
 };
 
 // ============================================
+// PLATFORMAVRUPA VARIANT (Avrupa Durum Odası)
+// ============================================
+const PLATFORMAVRUPA_PANELS: Record<string, PanelConfig> = {
+  map: { name: 'Avrupa Haritası', enabled: true, priority: 1 },
+  'live-news': { name: 'Canlı Haberler', enabled: true, priority: 1 },
+  insights: { name: 'AI Öngörüleri', enabled: true, priority: 1 },
+  'strategic-posture': { name: 'AI Stratejik Durum', enabled: true, priority: 1 },
+  cii: { name: 'Ülke İstikrarsızlığı', enabled: true, priority: 1 },
+  'strategic-risk': { name: 'Stratejik Risk Özeti', enabled: true, priority: 1 },
+  intel: { name: 'İstihbarat Akışı', enabled: true, priority: 1 },
+  'gdelt-intel': { name: 'Canlı İstihbarat', enabled: true, priority: 1 },
+  cascade: { name: 'Altyapı Kaskadı', enabled: true, priority: 1 },
+  politics: { name: 'Dünya Haberleri', enabled: true, priority: 1 },
+  middleeast: { name: 'Orta Doğu', enabled: true, priority: 1 },
+  africa: { name: 'Afrika', enabled: true, priority: 1 },
+  latam: { name: 'Latin Amerika', enabled: true, priority: 1 },
+  asia: { name: 'Asya-Pasifik', enabled: true, priority: 1 },
+  energy: { name: 'Enerji & Kaynaklar', enabled: true, priority: 1 },
+  gov: { name: 'Hükümet', enabled: true, priority: 1 },
+  thinktanks: { name: 'Düşünce Kuruluşları', enabled: true, priority: 1 },
+  polymarket: { name: 'Tahminler', enabled: true, priority: 1 },
+  commodities: { name: 'Emtialar', enabled: true, priority: 1 },
+  markets: { name: 'Piyasalar', enabled: true, priority: 1 },
+  economic: { name: 'Ekonomik Göstergeler', enabled: true, priority: 1 },
+  finance: { name: 'Finansal', enabled: true, priority: 1 },
+  tech: { name: 'Teknoloji', enabled: true, priority: 2 },
+  crypto: { name: 'Kripto', enabled: true, priority: 2 },
+  heatmap: { name: 'Sektör Isı Haritası', enabled: true, priority: 2 },
+  ai: { name: 'AI/ML', enabled: true, priority: 2 },
+  layoffs: { name: 'İşten Çıkarma Takibi', enabled: false, priority: 2 },
+  monitors: { name: 'Monitorlarım', enabled: true, priority: 2 },
+  'satellite-fires': { name: 'Yangınlar', enabled: true, priority: 2 },
+  'macro-signals': { name: 'Piyasa Radarı', enabled: true, priority: 2 },
+  'etf-flows': { name: 'BTC ETF Takibi', enabled: true, priority: 2 },
+  stablecoins: { name: 'Stablecoinler', enabled: true, priority: 2 },
+  'ucdp-events': { name: 'UCDP Çatışma Olayları', enabled: true, priority: 2 },
+  displacement: { name: 'UNHCR Yerinden Edilme', enabled: true, priority: 2 },
+  climate: { name: 'İklim Anomalileri', enabled: true, priority: 2 },
+  'population-exposure': { name: 'Nüfus Maruziyeti', enabled: true, priority: 2 },
+};
+
+const PLATFORMAVRUPA_MAP_LAYERS: MapLayers = {
+  conflicts: true,
+  bases: true,
+  cables: true,
+  pipelines: true,
+  hotspots: true,
+  ais: false,
+  nuclear: true,
+  irradiators: false,
+  sanctions: true,
+  weather: true,
+  economic: true,
+  waterways: true,
+  outages: true,
+  cyberThreats: false,
+  datacenters: false,
+  protests: true,
+  flights: false,
+  military: true,
+  natural: true,
+  spaceports: false,
+  minerals: false,
+  fires: false,
+  // Data source layers
+  ucdpEvents: false,
+  displacement: true,
+  climate: false,
+  // Tech layers (disabled in platformavrupa variant)
+  startupHubs: false,
+  cloudRegions: false,
+  accelerators: false,
+  techHQs: false,
+  techEvents: false,
+  // Finance layers (disabled in platformavrupa variant)
+  stockExchanges: false,
+  financialCenters: false,
+  centralBanks: false,
+  commodityHubs: false,
+  gulfInvestments: false,
+};
+
+const PLATFORMAVRUPA_MOBILE_MAP_LAYERS: MapLayers = {
+  conflicts: true,
+  bases: false,
+  cables: false,
+  pipelines: false,
+  hotspots: true,
+  ais: false,
+  nuclear: false,
+  irradiators: false,
+  sanctions: true,
+  weather: true,
+  economic: false,
+  waterways: false,
+  outages: true,
+  cyberThreats: false,
+  datacenters: false,
+  protests: true,
+  flights: false,
+  military: false,
+  natural: true,
+  spaceports: false,
+  minerals: false,
+  fires: false,
+  // Data source layers
+  ucdpEvents: false,
+  displacement: true,
+  climate: false,
+  // Tech layers
+  startupHubs: false,
+  cloudRegions: false,
+  accelerators: false,
+  techHQs: false,
+  techEvents: false,
+  // Finance layers
+  stockExchanges: false,
+  financialCenters: false,
+  centralBanks: false,
+  commodityHubs: false,
+  gulfInvestments: false,
+};
+
+// ============================================
 // VARIANT-AWARE EXPORTS
 // ============================================
-export const DEFAULT_PANELS = SITE_VARIANT === 'tech' ? TECH_PANELS : SITE_VARIANT === 'finance' ? FINANCE_PANELS : FULL_PANELS;
-export const DEFAULT_MAP_LAYERS = SITE_VARIANT === 'tech' ? TECH_MAP_LAYERS : SITE_VARIANT === 'finance' ? FINANCE_MAP_LAYERS : FULL_MAP_LAYERS;
-export const MOBILE_DEFAULT_MAP_LAYERS = SITE_VARIANT === 'tech' ? TECH_MOBILE_MAP_LAYERS : SITE_VARIANT === 'finance' ? FINANCE_MOBILE_MAP_LAYERS : FULL_MOBILE_MAP_LAYERS;
+export const DEFAULT_PANELS = 
+  SITE_VARIANT === 'tech' ? TECH_PANELS : 
+  SITE_VARIANT === 'finance' ? FINANCE_PANELS : 
+  SITE_VARIANT === 'platformavrupa' ? PLATFORMAVRUPA_PANELS : 
+  FULL_PANELS;
+export const DEFAULT_MAP_LAYERS = 
+  SITE_VARIANT === 'tech' ? TECH_MAP_LAYERS : 
+  SITE_VARIANT === 'finance' ? FINANCE_MAP_LAYERS : 
+  SITE_VARIANT === 'platformavrupa' ? PLATFORMAVRUPA_MAP_LAYERS : 
+  FULL_MAP_LAYERS;
+export const MOBILE_DEFAULT_MAP_LAYERS = 
+  SITE_VARIANT === 'tech' ? TECH_MOBILE_MAP_LAYERS : 
+  SITE_VARIANT === 'finance' ? FINANCE_MOBILE_MAP_LAYERS : 
+  SITE_VARIANT === 'platformavrupa' ? PLATFORMAVRUPA_MOBILE_MAP_LAYERS : 
+  FULL_MOBILE_MAP_LAYERS;
 
 // Monitor palette — fixed category colors persisted to localStorage (not theme-dependent)
 export const MONITOR_COLORS = [

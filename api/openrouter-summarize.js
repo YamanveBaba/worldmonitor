@@ -135,10 +135,24 @@ export default async function handler(request) {
 
     // Current date context for LLM (models may have outdated knowledge)
     const isTechVariant = variant === 'tech';
+    const isPlatformAvrupa = variant === 'platformavrupa';
     const dateContext = `Current date: ${new Date().toISOString().split('T')[0]}.${isTechVariant ? '' : ' Donald Trump is the current US President (second term, inaugurated Jan 2025).'}`;
 
     if (mode === 'brief') {
-      if (isTechVariant) {
+      if (isPlatformAvrupa) {
+        // PlatformAvrupa variant: Türkçe özet
+        systemPrompt = `${dateContext}
+
+Ana gelişmeyi 2-3 cümlede TÜRKÇE olarak özetle.
+Kurallar:
+- TÜRKÇE yaz, başka dil kullanma
+- NE olduğunu ve NEREDE olduğunu başta belirt - spesifik ol
+- "Son dakika", "İyi akşamlar", "Bu gece" gibi TV tarzı açılışlar kullanma
+- Doğrudan konuya gir: "İran rejimi...", "ABD Hazine Bakanlığı...", "...'de protestolar"
+- Ana aktörleri isimleriyle belirt
+- Madde işareti kullanma, yorum yapma`;
+        userPrompt = `Ana haberi özetle (TÜRKÇE):\n${headlineText}${intelSection}`;
+      } else if (isTechVariant) {
         // Tech variant: focus on startups, AI, funding, product launches
         systemPrompt = `${dateContext}
 
@@ -149,6 +163,7 @@ Rules:
 - Lead with the company/product/technology name
 - Start directly: "OpenAI announced...", "A new $50M Series B...", "GitHub released..."
 - No bullet points, no meta-commentary`;
+        userPrompt = `Summarize the top story:\n${headlineText}${intelSection}`;
       } else {
         // Full variant: geopolitical focus
         systemPrompt = `${dateContext}
@@ -161,8 +176,8 @@ Rules:
 - CRITICAL FOCAL POINTS are the main actors - mention them by name
 - If focal points show news + signals convergence, that's the lead
 - No bullet points, no meta-commentary`;
+        userPrompt = `Summarize the top story:\n${headlineText}${intelSection}`;
       }
-      userPrompt = `Summarize the top story:\n${headlineText}${intelSection}`;
     } else if (mode === 'analysis') {
       if (isTechVariant) {
         systemPrompt = `${dateContext}

@@ -212,10 +212,12 @@ export class App {
       this.panelSettings = { ...DEFAULT_PANELS };
       Object.keys(DEFAULT_PANELS).forEach(key => {
         if (savedSettings[key]) {
+          const def = DEFAULT_PANELS[key];
           // Existing panel, preserve enabled state but update name/priority from default
           this.panelSettings[key] = {
-            ...DEFAULT_PANELS[key],
-            enabled: savedSettings[key].enabled
+            name: def?.name ?? key,
+            enabled: savedSettings[key].enabled,
+            priority: def?.priority
           };
         }
         // New panel (not in savedSettings) already has default config from spread above

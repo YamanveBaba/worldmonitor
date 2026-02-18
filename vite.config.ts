@@ -90,6 +90,30 @@ const VARIANT_META: Record<string, {
       'Market radar signals',
     ],
   },
+  platformavrupa: {
+    title: 'PlatformAvrupa • Avrupa Durum Odası – Canlı Takip',
+    description: 'Avrupa\'da yaşayan Türk diasporası için gerçek zamanlı durum odası. Canlı haberler, jeopolitik takip, altyapı izleme ve güvenlik uyarıları tek bir platformda.',
+    keywords: 'avrupa durum odası, türk diasporası, avrupa haberleri, jeopolitik takip, güvenlik uyarıları, canlı takip, osint, avrupa türkleri, durum farkındalığı, gerçek zamanlı izleme',
+    url: 'https://monitor.platformavrupa.com/',
+    siteName: 'PlatformAvrupa Monitor',
+    shortName: 'PlatformAvrupa',
+    subject: 'Avrupa Durum Odası - Canlı İstihbarat ve Durum Farkındalığı',
+    classification: 'Durum Odası, OSINT Aracı, Haber Toplayıcı',
+    categories: ['news', 'productivity'],
+    features: [
+      'Gerçek zamanlı haber toplama',
+      'Avrupa odaklı jeopolitik takip',
+      'Askeri uçuş izleme',
+      'Gemi AIS takibi',
+      'Deprem uyarıları',
+      'Protesto takibi',
+      'Elektrik kesintisi izleme',
+      'Enerji fiyat analizi',
+      'Altyapı izleme',
+      'Güvenlik uyarıları',
+      'Türkçe dil desteği',
+    ],
+  },
 };
 
 const activeVariant = process.env.VITE_VARIANT || 'full';

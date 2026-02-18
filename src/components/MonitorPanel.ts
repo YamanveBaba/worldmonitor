@@ -1,8 +1,9 @@
 import { Panel } from './Panel';
 import type { Monitor, NewsItem } from '@/types';
-import { MONITOR_COLORS } from '@/config';
+import { MONITOR_COLORS, SITE_VARIANT } from '@/config';
 import { generateId, formatTime, getCSSColor } from '@/utils';
 import { escapeHtml, sanitizeUrl } from '@/utils/sanitize';
+import { testTelegramConnection } from '@/services/telegramService';
 
 export class MonitorPanel extends Panel {
   private monitors: Monitor[] = [];
@@ -16,6 +17,44 @@ export class MonitorPanel extends Panel {
 
   private renderInput(): void {
     this.content.innerHTML = '';
+    
+    // PlatformAvrupa variant: Show preset monitors
+    const isPlatformAvrupa = SITE_VARIANT === 'platformavrupa';
+    
+    if (isPlatformAvrupa && this.monitors.length === 0) {
+      const presetsContainer = document.createElement('div');
+      presetsContainer.className = 'monitor-presets';
+      presetsContainer.style.cssText = 'margin-bottom: 16px; padding: 12px; background: var(--bg-secondary, #1a1a1a); border-radius: 8px;';
+      presetsContainer.innerHTML = `
+        <div style="font-size: 11px; color: var(--text-dim, #888); margin-bottom: 8px; font-weight: 600;">
+          Avrupa Türkleri İçin Önerilen Monitorlar:
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <button class="preset-btn" data-preset="turkiye-ab-nato">🇹🇷 Türkiye OR AB OR NATO OR Ukrayna OR Gaz OR Boru</button>
+          <button class="preset-btn" data-preset="goc-vize">🚶 Göç OR Mülteci OR Vize</button>
+          <button class="preset-btn" data-preset="enerji">⚡ Enerji OR Doğalgaz OR Elektrik</button>
+        </div>
+      `;
+      this.content.appendChild(presetsContainer);
+      
+      // Preset button handlers
+      presetsContainer.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const preset = (e.target as HTMLElement).dataset.preset;
+          if (preset === 'turkiye-ab-nato') {
+            const input = document.getElementById('monitorKeywords') as HTMLInputElement;
+            if (input) input.value = 'Türkiye, AB, NATO, Ukrayna, Gaz, Boru';
+          } else if (preset === 'goc-vize') {
+            const input = document.getElementById('monitorKeywords') as HTMLInputElement;
+            if (input) input.value = 'göç, mülteci, vize';
+          } else if (preset === 'enerji') {
+            const input = document.getElementById('monitorKeywords') as HTMLInputElement;
+            if (input) input.value = 'enerji, doğalgaz, elektrik';
+          }
+        });
+      });
+    }
+    
     const inputContainer = document.createElement('div');
     inputContainer.className = 'monitor-input-container';
     inputContainer.innerHTML = `
@@ -25,6 +64,37 @@ export class MonitorPanel extends Panel {
 
     this.content.appendChild(inputContainer);
 
+    if (isPlatformAvrupa) {
+      const telegramTestRow = document.createElement('div');
+      telegramTestRow.style.cssText = 'margin-top: 8px; margin-bottom: 8px;';
+      telegramTestRow.innerHTML = `
+        <button type="button" class="monitor-add-btn" id="telegramTestBtn" style="font-size: 11px; padding: 6px 10px;">
+          Telegram'ı Test Et
+        </button>
+        <span id="telegramTestStatus" style="margin-left: 8px; font-size: 11px; color: var(--text-dim, #888);"></span>
+      `;
+      this.content.appendChild(telegramTestRow);
+      const telegramTestBtn = telegramTestRow.querySelector('#telegramTestBtn') as HTMLButtonElement;
+      const telegramTestStatus = telegramTestRow.querySelector('#telegramTestStatus') as HTMLElement;
+      if (telegramTestBtn) {
+        telegramTestBtn.onclick = async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          telegramTestStatus.textContent = 'Kontrol ediliyor...';
+          telegramTestBtn.disabled = true;
+          try {
+            const ok = await testTelegramConnection();
+            telegramTestStatus.textContent = ok ? 'Bağlantı başarılı.' : 'Bağlantı başarısız.';
+            if (!ok) telegramTestStatus.style.color = 'var(--status-critical, #ef4444)';
+          } catch (err) {
+            telegramTestStatus.textContent = 'Hata: ' + (err instanceof Error ? err.message : 'Bilinmeyen');
+            telegramTestStatus.style.color = 'var(--status-critical, #ef4444)';
+          }
+          telegramTestBtn.disabled = false;
+        };
+      }
+    }
+
     const monitorsList = document.createElement('div');
     monitorsList.id = 'monitorsList';
     this.content.appendChild(monitorsList);
@@ -33,14 +103,25 @@ export class MonitorPanel extends Panel {
     monitorsResults.id = 'monitorsResults';
     this.content.appendChild(monitorsResults);
 
-    inputContainer.querySelector('#addMonitorBtn')?.addEventListener('click', () => {
-      this.addMonitor();
-    });
+    // Use event delegation for more reliable event handling
+    const addBtn = inputContainer.querySelector('#addMonitorBtn') as HTMLButtonElement;
+    if (addBtn) {
+      addBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.addMonitor();
+      };
+    }
 
     const input = inputContainer.querySelector('#monitorKeywords') as HTMLInputElement;
-    input?.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') this.addMonitor();
-    });
+    if (input) {
+      input.onkeypress = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          this.addMonitor();
+        }
+      };
+    }
 
     this.renderMonitorsList();
   }

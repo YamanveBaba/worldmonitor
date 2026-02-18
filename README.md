@@ -53,8 +53,9 @@
 | **World Monitor** | [worldmonitor.app](https://worldmonitor.app) | Geopolitics, military, conflicts, infrastructure |
 | **Tech Monitor** | [tech.worldmonitor.app](https://tech.worldmonitor.app) | Startups, AI/ML, cloud, cybersecurity |
 | **Finance Monitor** | [finance.worldmonitor.app](https://finance.worldmonitor.app) | Global markets, trading, central banks, Gulf FDI |
+| **PlatformAvrupa Monitor** | [monitor.platformavrupa.com](https://monitor.platformavrupa.com) | Avrupa Durum Odası - Türk diasporası için özelleştirilmiş |
 
-All three variants run from a single codebase — switch between them with one click via the header bar (🌍 WORLD | 💻 TECH | 📈 FINANCE).
+All variants run from a single codebase — switch between them with one click via the header bar (🌍 WORLD | 💻 TECH | 📈 FINANCE | 🇹🇷 PLATFORMAVRUPA).
 
 ---
 
@@ -1008,14 +1009,16 @@ Contributions welcome! See [CONTRIBUTING](./docs/DOCUMENTATION.md#contributing) 
 
 ```bash
 # Development
-npm run dev          # Full variant (worldmonitor.app)
-npm run dev:tech     # Tech variant (tech.worldmonitor.app)
-npm run dev:finance  # Finance variant (finance.worldmonitor.app)
+npm run dev                # Full variant (worldmonitor.app)
+npm run dev:tech           # Tech variant (tech.worldmonitor.app)
+npm run dev:finance        # Finance variant (finance.worldmonitor.app)
+npm run dev:platformavrupa # PlatformAvrupa variant (monitor.platformavrupa.com)
 
 # Production builds
-npm run build:full      # Build full variant
-npm run build:tech      # Build tech variant
-npm run build:finance   # Build finance variant
+npm run build:full           # Build full variant
+npm run build:tech           # Build tech variant
+npm run build:finance       # Build finance variant
+npm run build:platformavrupa # Build PlatformAvrupa variant
 
 # Quality
 npm run typecheck    # TypeScript type checking
@@ -1091,6 +1094,101 @@ If you find World Monitor useful:
 
 ---
 
+## PlatformAvrupa Monitor - Özel Kurulum
+
+PlatformAvrupa Monitor, Avrupa'da yaşayan Türk diasporası için özelleştirilmiş bir durum odasıdır.
+
+### Özellikler
+
+- 🇹🇷 **Tam Türkçe Dil Desteği** - Tüm UI ve AI özetleri Türkçe
+- 📍 **Avrupa Odaklı Harita** - Default görünüm Avrupa merkezi (lat: 54.5, lon: 15.2, zoom: 4.2)
+- 🔔 **Telegram Otomatik Bildirimler** - Yüksek/kritik öncelikli uyarılar Telegram kanalına otomatik gönderilir
+- 🎯 **Özel Monitor Preset'leri** - Avrupa Türkleri için hazır monitor'lar:
+  - Türkiye OR AB OR NATO OR Ukrayna OR Gaz OR Boru
+  - Göç OR Mülteci OR Vize
+  - Enerji OR Doğalgaz OR Elektrik
+
+### Kurulum
+
+1. **Repository'yi klonlayın:**
+   ```bash
+   git clone https://github.com/yourusername/worldmonitor.git
+   cd worldmonitor
+   ```
+
+2. **Bağımlılıkları yükleyin:**
+   ```bash
+   npm install
+   ```
+
+3. **Environment variables ayarlayın:**
+   
+   `.env` dosyası oluşturun:
+   ```env
+   VITE_VARIANT=platformavrupa
+   VITE_TELEGRAM_BOT_TOKEN=your_bot_token_here
+   VITE_TELEGRAM_CHANNEL_ID=-100xxxxxxxxxx
+   ```
+
+4. **Telegram Bot Kurulumu:**
+   
+   - [@BotFather](https://t.me/BotFather)'a gidin ve `/newbot` komutuyla yeni bir bot oluşturun
+   - Bot token'ınızı kopyalayın ve `.env` dosyasına ekleyin
+   - Bot'u Telegram kanalınıza admin olarak ekleyin
+   - Channel ID'yi almak için:
+     - Kanalınıza bir mesaj gönderin
+     - [@userinfobot](https://t.me/userinfobot) veya [@RawDataBot](https://t.me/RawDataBot) kullanarak Channel ID'yi bulun
+     - Channel ID negatif bir sayı olmalı ve `-100` ile başlamalı (örnek: `-1001234567890`)
+
+5. **Development server'ı başlatın:**
+   ```bash
+   npm run dev:platformavrupa
+   ```
+
+6. **Production build:**
+   ```bash
+   npm run build:platformavrupa
+   ```
+
+### Vercel Deployment
+
+1. **Vercel'e deploy edin:**
+   ```bash
+   npm install -g vercel
+   vercel
+   ```
+
+2. **Environment variables ekleyin:**
+   - Vercel dashboard'da projenize gidin
+   - Settings > Environment Variables bölümüne gidin
+   - Şu değişkenleri ekleyin:
+     - `VITE_VARIANT` = `platformavrupa`
+     - `VITE_TELEGRAM_BOT_TOKEN` = Bot token'ınız
+     - `VITE_TELEGRAM_CHANNEL_ID` = Channel ID'niz
+
+3. **Build command:**
+   ```
+   npm run build:platformavrupa
+   ```
+
+### Telegram Bildirimleri
+
+PlatformAvrupa variant'ında, aşağıdaki durumlarda Telegram kanalına otomatik bildirim gönderilir:
+
+- **Keyword Spike** - Anahtar kelime artışı (confidence >= 0.75)
+- **Convergence Alert** - Coğrafi yakınsama (high/critical priority)
+- **Temporal Anomaly** - Temporal anomali (high/critical severity)
+- **Custom Monitor Match** - Özel monitor eşleşmesi (yüksek öncelikli)
+
+Her olay için 30 dakikalık cooldown süresi vardır (aynı olay tekrar gönderilmez).
+
+### Daha Fazla Bilgi
+
+- [Tam Dokümantasyon](./docs/DOCUMENTATION.md)
+- [PlatformAvrupa Ana Site](https://platformavrupa.com)
+
+---
+
 ## License
 
 MIT License — see [LICENSE](LICENSE) for details.
@@ -1106,7 +1204,8 @@ MIT License — see [LICENSE](LICENSE) for details.
 <p align="center">
   <a href="https://worldmonitor.app">worldmonitor.app</a> &nbsp;·&nbsp;
   <a href="https://tech.worldmonitor.app">tech.worldmonitor.app</a> &nbsp;·&nbsp;
-  <a href="https://finance.worldmonitor.app">finance.worldmonitor.app</a>
+  <a href="https://finance.worldmonitor.app">finance.worldmonitor.app</a> &nbsp;·&nbsp;
+  <a href="https://monitor.platformavrupa.com">monitor.platformavrupa.com</a>
 </p>
 
 ## Star History

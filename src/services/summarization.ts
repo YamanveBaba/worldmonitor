@@ -84,7 +84,10 @@ async function tryBrowserT5(headlines: string[]): Promise<SummarizationResult | 
     }
 
     const combinedText = headlines.slice(0, 6).map(h => h.slice(0, 80)).join('. ');
-    const prompt = `Summarize the main themes from these news headlines in 2 sentences: ${combinedText}`;
+    const isPlatformAvrupa = SITE_VARIANT === 'platformavrupa';
+    const prompt = isPlatformAvrupa
+      ? `Bu haber başlıklarından ana temaları 2 cümlede TÜRKÇE olarak özetle: ${combinedText}`
+      : `Summarize the main themes from these news headlines in 2 sentences: ${combinedText}`;
 
     const [summary] = await mlWorker.summarize([prompt]);
 

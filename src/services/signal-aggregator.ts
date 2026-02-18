@@ -306,6 +306,19 @@ class SignalAggregator {
       };
       this.signals.push(signal);
       this.temporalSourceMap.set(signal, a.type);
+      
+      // Telegram hook for PlatformAvrupa variant (high/critical severity only)
+      if (a.severity === 'high' || a.severity === 'critical') {
+        import('@/services/telegramService').then(({ sendTelegramAlert }) => {
+          const turkishTitle = `Temporal Anomali: ${a.region}`;
+          const turkishDesc = a.message || `${a.type} için ${a.currentCount} olay tespit edildi (beklenen: ${a.expectedCount})`;
+          sendTelegramAlert('anomaly', a.severity === 'critical' ? 'critical' : 'high', turkishTitle, turkishDesc, {
+            location: { lat: 0, lon: 0 }, // Region-based, no specific coordinates
+          }).catch(err => console.warn('[Telegram] Anomaly alert send failed:', err));
+        }).catch(() => {
+          // Telegram service not available, ignore
+        });
+      }
     }
     this.pruneOld();
   }
