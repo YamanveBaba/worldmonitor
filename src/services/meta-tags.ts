@@ -1,5 +1,6 @@
-// Dynamic Meta Tags Service for World Monitor
-// Updates OG tags and Twitter Cards for shared stories
+// Dynamic Meta Tags Service – variant-aware (PlatformAvrupa vs World Monitor)
+
+import { SITE_VARIANT } from '@/config';
 
 interface StoryMeta {
   countryCode: string;
@@ -10,14 +11,14 @@ interface StoryMeta {
   type: 'ciianalysis' | 'crisisalert' | 'dailybrief' | 'marketfocus';
 }
 
-const BASE_URL = 'https://worldmonitor.app';
-const DEFAULT_IMAGE = 'https://worldmonitor.app/favico/og-image.png';
+const BASE_URL = SITE_VARIANT === 'platformavrupa' ? 'https://platformavrupa.com' : 'https://worldmonitor.app';
+const DEFAULT_IMAGE = SITE_VARIANT === 'platformavrupa' ? 'https://platformavrupa.com/favico/og-image.png' : 'https://worldmonitor.app/favico/og-image.png';
+const SITE_NAME = SITE_VARIANT === 'platformavrupa' ? 'PlatformAvrupa' : 'World Monitor';
 
 export function updateMetaTagsForStory(meta: StoryMeta): void {
   const { countryCode, countryName, ciiScore, ciiLevel, trend, type } = meta;
   
-  // Generate dynamic content
-  const title = `${countryName} Intelligence Brief | World Monitor`;
+  const title = `${countryName} Intelligence Brief | ${SITE_NAME}`;
   const description = generateDescription(ciiScore, ciiLevel, trend, type, countryName);
   const storyUrl = `${BASE_URL}/api/story?c=${countryCode}&t=${type}`;
   let imageUrl = `${BASE_URL}/api/og-story?c=${countryCode}&t=${type}`;
@@ -48,8 +49,12 @@ export function updateMetaTagsForStory(meta: StoryMeta): void {
 }
 
 export function resetMetaTags(): void {
-  const defaultTitle = 'World Monitor - Global Situation with AI Insights';
-  const defaultDesc = 'AI-powered real-time global intelligence dashboard with live news, markets, military tracking, and geopolitical data.';
+  const defaultTitle = SITE_VARIANT === 'platformavrupa'
+    ? 'PlatformAvrupa • Avrupa Durum Odası – Canlı Takip'
+    : 'World Monitor - Global Situation with AI Insights';
+  const defaultDesc = SITE_VARIANT === 'platformavrupa'
+    ? 'Avrupa\'da yaşayan Türk diasporası için gerçek zamanlı durum odası. Canlı haberler, jeopolitik takip, altyapı izleme ve güvenlik uyarıları.'
+    : 'AI-powered real-time global intelligence dashboard with live news, markets, military tracking, and geopolitical data.';
   
   setMetaTag('title', defaultTitle);
   setMetaTag('description', defaultDesc);
@@ -96,7 +101,7 @@ function generateDescription(
     parts.push(typeDescriptions[type]);
   }
   
-  return `World Monitor ${parts.join('. ')}. Free, open-source geopolitical intelligence.`;
+  return `${SITE_NAME} ${parts.join('. ')}. Free, open-source geopolitical intelligence.`;
 }
 
 function setMetaTag(property: string, content: string): void {
