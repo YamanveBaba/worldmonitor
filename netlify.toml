@@ -1,0 +1,15 @@
+# Netlify – platformavrupa.com için GitHub bağlayınca otomatik kullanılır
+# Build komutu ve çıktı klasörü burada; Netlify’de elle yazmana gerek kalmaz.
+
+[build]
+  command = "npm run build:platformavrupa"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA: Tüm yollar index.html'e gitsin; sayfalar (market vb.) açılsın
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
